@@ -6,7 +6,7 @@ from botocore.exceptions import ClientError
 
 app = Chalice(app_name="the-daily-q")
 s3 = boto3.resource("s3")
-s3_bucket = s3.Bucket(os.environ.get("S3_BUCKET_NAME", ""))
+s3_bucket = s3.Bucket(os.environ.get("S3_BUCKET_NAME", "the-daily-q"))
 ses = boto3.client("ses", region_name="eu-west-2")
 
 # The first and only email address verified with SES, i.e. mine
@@ -16,11 +16,13 @@ SENDER = "The Daily Q <" + email_address + ">"
 RECIPIENT = email_address
 SUBJECT = "The Daily Q"
 
+
 @app.route("/questions", methods=["GET"])
 def get_questions():
     S3_URL = "https://the-daily-q.s3.eu-west-2.amazonaws.com/"
-    questions = [q.key for q in s3_bucket.objects.filter(Prefix='questions/')].sort()
-    solutions = [s.key for s in s3_bucket.objects.filter(Prefix='solutions/')].sort()
+    
+    questions = [S3_URL + q.key for q in s3_bucket.objects.filter(Prefix="questions")]
+    solutions = [S3_URL + s.key for s in s3_bucket.objects.filter(Prefix="solutions")]
 
     return list(zip(questions, solutions))
 
@@ -35,7 +37,10 @@ def send_email():
             Message={
                 "Body": {
                     "Html": {"Charset": "UTF-8", "Data": body_html(question, solution)},
-                    "Text": {"Charset": "UTF-8", "Data": body_plaintext(question, solution)},
+                    "Text": {
+                        "Charset": "UTF-8",
+                        "Data": body_plaintext(question, solution),
+                    },
                 },
                 "Subject": {"Charset": "UTF-8", "Data": SUBJECT},
             },
@@ -58,11 +63,10 @@ def random_question():
 
     return questions[i]
 
+
 def body_plaintext(question_url, solution_url):
-    return ("The Daily Q"
-    f"Question: {question_url}"
-    f"Solution: {solution_url}"
-    )
+    return "The Daily Q" f"Question: {question_url}" f"Solution: {solution_url}"
+
 
 def body_html(question_url, solution_url):
     return """<html>
@@ -73,4 +77,6 @@ def body_html(question_url, solution_url):
     <a href="{}">Solution</a>
 </body>
 </html>
-""".format(question_url, solution_url)
+""".format(
+        question_url, solution_url
+    )
