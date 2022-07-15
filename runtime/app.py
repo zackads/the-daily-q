@@ -16,19 +16,16 @@ SENDER = "The Daily Q <" + email_address + ">"
 RECIPIENT = email_address
 SUBJECT = "The Daily Q"
 
-
-@app.route("/questions", methods=["GET"])
-def get_questions():
-    S3_URL = "https://the-daily-q.s3.eu-west-2.amazonaws.com/"
-
-    questions = [S3_URL + q.key for q in s3_bucket.objects.filter(Prefix="questions")]
-    solutions = [S3_URL + s.key for s in s3_bucket.objects.filter(Prefix="solutions")]
-
-    return list(zip(questions, solutions))
-
-
-@app.route("/email", methods=["POST"])
 @app.schedule(Cron(0, 7, "*", "*", "?", "*"))  # Daily at 7am UTC
+def send_daily_email():
+    send_email()
+
+
+@app.route("/email", methods=["GET"])
+def send_email_on_request():
+    return send_email()
+
+
 def send_email():
     question, solution = random_question()
 
@@ -52,6 +49,14 @@ def send_email():
     else:
         return "Email sent! Message ID: ", response["MessageId"]
 
+@app.route("/questions", methods=["GET"])
+def get_questions():
+    S3_URL = "https://the-daily-q.s3.eu-west-2.amazonaws.com/"
+
+    questions = [S3_URL + q.key for q in s3_bucket.objects.filter(Prefix="questions")]
+    solutions = [S3_URL + s.key for s in s3_bucket.objects.filter(Prefix="solutions")]
+
+    return list(zip(questions, solutions))
 
 def random_question():
     """
