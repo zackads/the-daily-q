@@ -20,7 +20,7 @@ SUBJECT = "The Daily Q"
 @app.route("/questions", methods=["GET"])
 def get_questions():
     S3_URL = "https://the-daily-q.s3.eu-west-2.amazonaws.com/"
-    
+
     questions = [S3_URL + q.key for q in s3_bucket.objects.filter(Prefix="questions")]
     solutions = [S3_URL + s.key for s in s3_bucket.objects.filter(Prefix="solutions")]
 
@@ -59,7 +59,7 @@ def random_question():
     Return a tuple of the question URL and the solution URL
     """
     questions = get_questions()
-    i = random.randrange(0, questions.length)
+    i = random.randrange(0, len(questions))
 
     return questions[i]
 
