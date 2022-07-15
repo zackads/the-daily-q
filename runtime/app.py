@@ -1,7 +1,7 @@
 import os
 import boto3
 import random
-from chalice import Chalice
+from chalice import Chalice, Cron
 from botocore.exceptions import ClientError
 
 app = Chalice(app_name="the-daily-q")
@@ -28,6 +28,7 @@ def get_questions():
 
 
 @app.route("/email", methods=["POST"])
+@app.schedule(Cron(0, 7, "*", "*", "?", "*"))  # Daily at 7am UTC
 def send_email():
     question, solution = random_question()
 
