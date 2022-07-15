@@ -4,14 +4,17 @@ import random
 from chalice import Chalice
 from botocore.exceptions import ClientError
 
-SENDER = "The Daily Q <" + os.environ.get("SENDER") + ">"
-RECIPIENT = os.environ.get("RECIPIENT")
-SUBJECT = "The Daily Q"
-
 app = Chalice(app_name="the-daily-q")
 s3 = boto3.resource("s3")
 s3_bucket = s3.Bucket(os.environ.get("S3_BUCKET_NAME", ""))
 ses = boto3.client("ses", region_name="eu-west-2")
+
+# The first and only email address verified with SES, i.e. mine
+email_address = ses.list_identities()["Identities"][0]
+
+SENDER = "The Daily Q <" + email_address + ">"
+RECIPIENT = email_address
+SUBJECT = "The Daily Q"
 
 @app.route("/questions", methods=["GET"])
 def get_questions():
