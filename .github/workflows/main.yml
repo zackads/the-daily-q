@@ -1,0 +1,21 @@
+name: Deploy
+on: [push]
+jobs:
+  Deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
+      - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
+      - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: Install node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: Install AWS CDK
+        run: npm install -g aws-cdk
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+      - name: Deploy
+        run: cd ./infrastructure && cdk bootstrap && cdk deploy
