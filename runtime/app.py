@@ -4,7 +4,7 @@ import random
 from chalice import Chalice
 from botocore.exceptions import ClientError
 
-SENDER = "The Daily Q <" + {os.environ.get("SENDER")} + ">"
+SENDER = "The Daily Q <" + os.environ.get("SENDER") + ">"
 RECIPIENT = os.environ.get("RECIPIENT")
 SUBJECT = "The Daily Q"
 
