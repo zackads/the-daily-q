@@ -5,12 +5,12 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
     steps:
-        uses: actions/checkout@v3
-        uses: actions/setup-node@v3
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
           node-version: 16
-        run: npm install -g aws-cdk
-        run: pip install -r requirements.txt
+      - run: npm install -g aws-cdk
+      - run: pip install -r requirements.txt
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
