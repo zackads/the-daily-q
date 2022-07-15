@@ -9,6 +9,9 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 16
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.10.x'
       - run: npm install -g aws-cdk
       - run: pip install -r requirements.txt
       - name: Configure AWS Credentials
@@ -19,4 +22,4 @@ jobs:
           aws-region: eu-west-2
       - name: Deploy
         working-directory: ./infrastructure
-        run: cdk deploy
+        run: cdk deploy -f --require-approval "never"
