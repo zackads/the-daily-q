@@ -17,7 +17,7 @@ RECIPIENT = email_address
 SUBJECT = "The Daily Q"
 
 @app.schedule(Cron(0, 7, "*", "*", "?", "*"))  # Daily at 7am UTC
-def send_daily_email():
+def send_daily_email(event):
     send_email()
 
 
