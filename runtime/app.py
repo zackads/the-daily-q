@@ -20,6 +20,13 @@ SUBJECT = "The Daily Q"
 def send_daily_email(event):
     send_email()
 
+@app.route("/q", methods=["GET"])
+def get_random_question():
+    question, solution = random_question()
+    return {
+        "question": question,
+        "solution": solution
+    }
 
 @app.route("/email", methods=["GET"])
 def send_email_on_request():
