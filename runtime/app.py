@@ -19,6 +19,8 @@ SUBJECT = "The Daily Q"
 @app.schedule(Cron(0, 7, "*", "*", "?", "*"))  # Daily at 7am UTC
 def send_daily_email(event):
     send_email()
+    send_email()
+    send_email()
 
 @app.route("/q", methods=["GET"])
 def get_random_question():
