@@ -29,13 +29,10 @@ class ChaliceApp(cdk.Stack):
             "ChaliceApp",
             source_dir=RUNTIME_SOURCE_DIR,
             stage_config={
-                "environment_variables": {
-                    "S3_BUCKET_NAME": self.s3_bucket.bucket_name,
-                }
+                "environment_variables": {"S3_BUCKET_NAME": self.s3_bucket.bucket_name,}
             },
         )
         self.s3_bucket.grant_read(self.chalice.get_role("DefaultRole"))
-        self._deploy_static_assets()
 
     def _create_s3_bucket(self):
         bucket = s3.Bucket(
