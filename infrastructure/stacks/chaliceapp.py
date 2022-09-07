@@ -48,11 +48,3 @@ class ChaliceApp(cdk.Stack):
         cdk.CfnOutput(self, "S3BucketName", value=bucket.bucket_name)
         cdk.CfnOutput(self, "BucketDomain", value=bucket.bucket_website_domain_name)
         return bucket
-
-    def _deploy_static_assets(self):
-        s3_deployment.BucketDeployment(
-            self,
-            "Deployment",
-            sources=[s3_deployment.Source.asset(STATIC_DIR)],
-            destination_bucket=self.s3_bucket,
-        )
