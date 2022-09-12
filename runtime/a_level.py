@@ -1,16 +1,25 @@
+import os
 import random
 
+import boto3
 from botocore.exceptions import ClientError
 
-from runtime.app import ses, RECIPIENT, SUBJECT, SENDER, \
-    s3_bucket
+s3 = boto3.resource("s3")
+s3_bucket = s3.Bucket(os.environ.get("S3_BUCKET_NAME", "the-daily-q"))
+ses = boto3.client("ses", region_name="eu-west-2")
 
+# The first and only email address verified with SES, i.e. mine
+email_address = ses.list_identities()["Identities"][0]
+
+SENDER = "The Daily Q <" + email_address + ">"
+RECIPIENT = email_address
+SUBJECT = "The Daily Q"
 
 def email_random_a_level_question():
     question, solution = random_question()
 
     try:
-        response = ses.email_random_a_level_question(
+        response = ses.email_current_step_assignment(
             Destination={"ToAddresses": [RECIPIENT]},
             Message={
                 "Body": {
