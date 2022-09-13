@@ -1,8 +1,8 @@
 import datetime
 from chalice import Chalice, Cron
 
-from runtime.a_level import email_random_a_level_question
-from runtime.step import email_current_step_assignment
+from a_level import email_random_a_level_question
+from step import email_current_step_assignment
 
 app = Chalice(app_name="the-daily-q")
 
@@ -14,6 +14,6 @@ def send_a_level_questions(event):
     email_random_a_level_question()
 
 
-@app.schedule(Cron(0, 7, "*", "*", "MON", "*"))  # Every Monday at 7am UTC
+@app.schedule(Cron(0, 7, "?", "*", "MON", "*"))  # Every Monday at 7am UTC
 def send_step_assignment(event):
     email_current_step_assignment(datetime.datetime.today())
