@@ -1,9 +1,9 @@
 import datetime
 from chalice import Chalice, Cron
 
-from a_level import email_random_a_level_question
-from nrich import email_random_nrich_short_problem
-from step import email_current_step_assignment
+from runtime.a_level import email_random_a_level_question
+from runtime.nrich import email_random_nrich_short_problem
+from runtime.step import email_current_step_assignment
 
 app = Chalice(app_name="the-daily-q")
 
