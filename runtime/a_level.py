@@ -19,7 +19,7 @@ def email_random_a_level_question():
     question, solution = random_question()
 
     try:
-        response = ses.email_current_step_assignment(
+        response = ses.send_email(
             Destination={"ToAddresses": [RECIPIENT]},
             Message={
                 "Body": {

@@ -17,7 +17,7 @@ def email_random_nrich_short_problem():
     problem = get_random_short_problem()
 
     try:
-        response = ses.email_current_step_assignment(
+        response = ses.send_email(
             Destination={"ToAddresses": [RECIPIENT]},
             Message={
                 "Body": {

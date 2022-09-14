@@ -16,7 +16,7 @@ def email_current_step_assignment(today: datetime.date):
     assignment = get_this_weeks_assignment(today)
 
     try:
-        response = ses.email_current_step_assignment(
+        response = ses.send_email(
             Destination={"ToAddresses": [RECIPIENT]},
             Message={
                 "Body": {
