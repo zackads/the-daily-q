@@ -2,7 +2,7 @@ from datetime import datetime
 
 import pytest
 
-from runtime.step import get_this_weeks_assignment
+from runtime.chalicelib.step import get_this_weeks_assignment
 
 
 def test_get_this_weeks_assignment():
