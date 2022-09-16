@@ -15,6 +15,9 @@ def send_a_level_questions(event):
     email_random_a_level_question()
     email_random_nrich_short_problem()
 
+@app.route("/email", methods=["GET"])
+def send_email_on_request():
+    return email_random_a_level_question()
 
 @app.schedule(Cron(0, 7, "?", "*", "MON", "*"))  # Every Monday at 7am UTC
 def send_step_assignment(event):
