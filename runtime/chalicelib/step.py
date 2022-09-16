@@ -1,42 +1,8 @@
 from datetime import datetime
-
-import boto3
-from botocore.exceptions import ClientError
-
-ses = boto3.client("ses", region_name="eu-west-2")
-
-# The first and only email address verified with SES, i.e. mine
-email_address = ses.list_identities()["Identities"][0]
-
-SENDER = "STEP Assignment <" + email_address + ">"
-RECIPIENT = email_address
-SUBJECT = "The Weekly STEP Assignment"
-
-def email_current_step_assignment(today: datetime.date):
-    assignment = get_this_weeks_assignment(today)
-
-    try:
-        response = ses.send_email(
-            Destination={"ToAddresses": [RECIPIENT]},
-            Message={
-                "Body": {
-                    "Html": {"Charset": "UTF-8", "Data": body_html(assignment)},
-                    "Text": {
-                        "Charset": "UTF-8",
-                        "Data": body_plaintext(assignment),
-                    },
-                },
-                "Subject": {"Charset": "UTF-8", "Data": SUBJECT},
-            },
-            Source=SENDER,
-        )
-    except ClientError as e:
-        return e.response["Error"]["Message"]
-    else:
-        return "Email sent! Message ID: ", response["MessageId"]
+from typing import Tuple
 
 
-def get_this_weeks_assignment(today: datetime.date):
+def get_this_weeks_assignment(today: datetime.date) -> str:
     start = datetime(2022, 9, 12)
     current_assignment_index = (today - start).days // 7
 
@@ -95,18 +61,19 @@ def get_this_weeks_assignment(today: datetime.date):
     return assignments[current_assignment_index]
 
 
-def body_html(assignment_url):
-    return """<html>
+def email_body(assignment_url: str) -> Tuple[str, str]:
+    return body_html(assignment_url), body_plaintext(assignment_url)
+
+
+def body_html(assignment_url: str) -> str:
+    return f"""<html>
 <head></head>
 <body>
-    <h1>Weekly STEP Assignment</h1>
-    <a href="{}">Solution</a>
+    <a href="{assignment_url}"><h1>Weekly STEP Assignment</h1></a>
 </body>
 </html>
-""".format(
-        assignment_url
-    )
+"""
 
 
-def body_plaintext(assignment_url):
+def body_plaintext(assignment_url: str) -> str:
     return "Weekly STEP Assignment" f"{assignment_url}"

@@ -2,14 +2,13 @@
 Email maths problems etc. periodically
 """
 
-import datetime
+from datetime import datetime
 import os
 import boto3
 from botocore.exceptions import ClientError
 from chalice import Chalice, Cron
 
-from chalicelib.step import email_current_step_assignment
-from chalicelib import a_level, nrich
+from chalicelib import a_level, nrich, step
 
 s3 = boto3.resource("s3")
 s3_bucket = s3.Bucket(os.environ.get("S3_BUCKET_NAME", "the-daily-q"))
@@ -31,16 +30,18 @@ def send_a_level_questions(event):
     send_email("The Daily Q", *a_level.email_body(a_level.get_random_question(s3_bucket)))
     send_email("NRICH Short", *nrich.email_body(nrich.get_random_short_problem()))
 
-@app.route("/test", methods=["GET"])
-def send_test_email():
-    """For testing"""
-    return send_email("Test Email", *a_level.email_body(a_level.get_random_question(s3_bucket)))
-
 
 @app.schedule(Cron(0, 7, "?", "*", "MON", "*"))  # Every Monday at 7am UTC
 def send_step_assignment(event):
     """Email an assignment from the STEP Support Programme"""
-    email_current_step_assignment(datetime.datetime.today())
+    send_email("Weekly STEP "
+               "Assignment", *step.email_body(step.get_this_weeks_assignment(datetime.today())))
+
+
+@app.route("/test", methods=["GET"])
+def send_test_email():
+    """For testing"""
+    return send_email("Test Q", *a_level.email_body(a_level.get_random_question(s3_bucket)))
 
 
 def send_email(subject: str, body_html: str, body_plaintext: str) -> None:
