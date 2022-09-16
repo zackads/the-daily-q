@@ -1,78 +1,74 @@
-import os
+"""
+Get links to A-level Mathematics questions and prepare them for emailing
+"""
+
 import random
-
-import boto3
-from botocore.exceptions import ClientError
-
-s3 = boto3.resource("s3")
-s3_bucket = s3.Bucket(os.environ.get("S3_BUCKET_NAME", "the-daily-q"))
-ses = boto3.client("ses", region_name="eu-west-2")
-
-# The first and only email address verified with SES, i.e. mine
-email_address = ses.list_identities()["Identities"][0]
-
-SENDER = "The Daily Q <" + email_address + ">"
-RECIPIENT = email_address
-SUBJECT = "The Daily Q"
-
-def email_random_a_level_question():
-    question, solution = random_question()
-
-    try:
-        response = ses.send_email(
-            Destination={"ToAddresses": [RECIPIENT]},
-            Message={
-                "Body": {
-                    "Html": {"Charset": "UTF-8", "Data": body_html(question, solution)},
-                    "Text": {
-                        "Charset": "UTF-8",
-                        "Data": body_plaintext(question, solution),
-                    },
-                },
-                "Subject": {"Charset": "UTF-8", "Data": SUBJECT},
-            },
-            Source=SENDER,
-        )
-    except ClientError as e:
-        return e.response["Error"]["Message"]
-    else:
-        return "Email sent! Message ID: ", response["MessageId"]
+from typing import Tuple, TypedDict
 
 
-def get_questions():
-    S3_URL = "https://the-daily-q.s3.eu-west-2.amazonaws.com/"
+class ALevelQuestion(TypedDict):
+    """
+    URLs linking to a single A-level question and its worked solution with examiner feedback.
+    Links go to images hosted in S3.
+    """
+    questionUrl: str
+    solutionUrl: str
 
-    questions = [S3_URL + q.key for q in s3_bucket.objects.filter(Prefix="a_level/questions")]
-    solutions = [S3_URL + s.key for s in s3_bucket.objects.filter(Prefix="a_level/solutions")]
 
-    return list(zip(questions, solutions))
+def get_questions(s3_bucket) -> list[ALevelQuestion]:
+    """
+    List all URLs to A-level questions and their solutions
+    """
+    s3_url = f'https://{s3_bucket.name}.s3.eu-west-2.amazonaws.com/'
+
+    questions = [s3_url + q.key for q in s3_bucket.objects.filter(Prefix="a_level/questions")]
+    solutions = [s3_url + s.key for s in s3_bucket.objects.filter(Prefix="a_level/solutions")]
+
+    return [{'questionUrl': q, 'solutionUrl': s} for q, s in zip(questions, solutions)]
 
 
-def random_question():
+def get_random_question(s3_bucket) -> ALevelQuestion:
     """
     Select a question from the question bank.
 
     Return a tuple of the question URL and the solution URL
     """
-    questions = get_questions()
+    questions = get_questions(s3_bucket)
     i = random.randrange(0, len(questions))
 
     return questions[i]
 
 
-def body_html(question_url, solution_url):
-    return """<html>
+def email_body(question: ALevelQuestion) -> Tuple[str, str]:
+    """
+    Return the body HTML and plaintext for an A-level question email
+    """
+    return body_html(question), body_plaintext(question)
+
+
+def body_html(question: ALevelQuestion) -> str:
+    """
+    Format an A-level question email
+    """
+    return f"""<html>
 <head></head>
 <body>
     <h1>The Daily Q</h1>
-    <img src="{}" />
-    <a href="{}">Solution</a>
+    <img src="{question['questionUrl']}" />
+    <a href="{question['solutionUrl']}">Solution</a>
 </body>
 </html>
-""".format(
-        question_url, solution_url
-    )
+"""
 
 
-def body_plaintext(question_url, solution_url):
-    return "The Daily Q" f"Question: {question_url}" f"Solution: {solution_url}"
+def body_plaintext(question: ALevelQuestion) -> str:
+    """
+    Plaintext A-level question email
+    """
+    return f"""
+The Daily Q
+
+Question: {question['questionUrl']} 
+
+Solution: {question['solutionUrl']} 
+"""
