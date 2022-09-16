@@ -1,8 +1,7 @@
 import os
 
-from aws_cdk import aws_dynamodb as dynamodb
 from aws_cdk import aws_s3 as s3
-from aws_cdk import aws_s3_deployment as s3_deployment
+from aws_cdk import aws_iam as iam
 
 try:
     from aws_cdk import core as cdk
@@ -33,6 +32,11 @@ class ChaliceApp(cdk.Stack):
             },
         )
         self.s3_bucket.grant_read(self.chalice.get_role("DefaultRole"))
+        self._grant_email_permissions()
+
+    def _grant_email_permissions(self):
+        amazon_ses_full_access = iam.ManagedPolicy.from_aws_managed_policy_name("AmazonSESFullAccess")
+        self.chalice.get_role("DefaultRole").add_managed_policy(amazon_ses_full_access)
 
     def _create_s3_bucket(self):
         bucket = s3.Bucket(
