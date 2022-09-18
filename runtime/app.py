@@ -39,7 +39,10 @@ def send_step_assignment(event):
 @app.route("/test", methods=["GET"])
 def send_test_email():
     """For testing"""
-    return send_email("Test Q", *a_level.email_body(a_level.get_random_question(s3_bucket)))
+    send_email("Test A-level Q", *a_level.email_body(a_level.get_random_question(s3_bucket)))
+    send_email("Test NRICH Short", *nrich.email_body(nrich.get_random_short_problem()))
+    send_email("Test Weekly STEP "
+               "Assignment", *step.email_body(step.get_this_weeks_assignment(datetime.today())))
 
 
 def send_email(subject: str, body_html: str, body_plaintext: str) -> None:
