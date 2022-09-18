@@ -16,7 +16,7 @@ class NRICHShort(TypedDict):
 def get_random_short_problem() -> NRICHShort:
     """Short problems from https://nrich.maths.org/11993"""
 
-    with open("runtime/chalicelib/nrich_short_problems.json", "r") as file:
+    with open("nrich_short_problems.json", "r") as file:
         problems = json.load(file)
 
     return choice(problems)
