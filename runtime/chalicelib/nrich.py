@@ -16,17 +16,19 @@ class NRICHShort(TypedDict):
 def get_random_short_problem() -> NRICHShort:
     """Short problems from https://nrich.maths.org/11993"""
 
-    with open("nrich_short_problems.json", "r") as file:
+    with open("./runtime/chalicelib/nrich_short_problems.json", mode="r", encoding='utf-8') as file:
         problems = json.load(file)
 
     return choice(problems)
 
 
 def email_body(problem: NRICHShort) -> Tuple[str, str]:
+    """Get an HTML and plaintext-formatted email body containing an NRICH Short problem"""
     return body_html(problem), body_plaintext(problem)
 
 
 def body_html(problem: NRICHShort) -> str:
+    """HTML-formatted email body containing an NRICH Short problem"""
     return f"""<html>
 <head></head>
 <body>
@@ -37,4 +39,5 @@ def body_html(problem: NRICHShort) -> str:
 
 
 def body_plaintext(problem: NRICHShort):
+    """Plaintext-formatted email body containing an NRICH Short problem"""
     return "Daily NRICH Short" f"{problem['title']}: {problem['url']}"
