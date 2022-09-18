@@ -6,6 +6,6 @@ except ImportError:
 from stacks.chaliceapp import ChaliceApp
 
 app = cdk.App()
-ChaliceApp(app, 'the-daily-q')
+ChaliceApp(app, "the-daily-q")
 
 app.synth()

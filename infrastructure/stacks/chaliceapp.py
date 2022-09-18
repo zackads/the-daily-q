@@ -1,8 +1,8 @@
 """AWS Chalice app"""
 import os
 
-from aws_cdk import aws_s3 as s3
 from aws_cdk import aws_iam as iam
+from aws_cdk import aws_s3 as s3
 
 try:
     from aws_cdk import core as cdk
@@ -22,6 +22,7 @@ STATIC_DIR = os.path.join(
 
 class ChaliceApp(cdk.Stack):
     """Defines infrastructure used by Chalice"""
+
     def __init__(self, scope, id, **kwargs):
         super().__init__(scope, id, **kwargs)
         self.s3_bucket = self._create_s3_bucket()
@@ -30,8 +31,8 @@ class ChaliceApp(cdk.Stack):
             "ChaliceApp",
             source_dir=RUNTIME_SOURCE_DIR,
             stage_config={
-                "environment_variables": {"S3_BUCKET_NAME": self.s3_bucket.bucket_name,}
-            }
+                "environment_variables": {"S3_BUCKET_NAME": self.s3_bucket.bucket_name, }
+            },
         )
         self.s3_bucket.grant_read(self.chalice.get_role("DefaultRole"))
         self._grant_email_permissions()

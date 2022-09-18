@@ -23,6 +23,7 @@ def test_nrich():
     assert len(problem["title"]) > 0
     assert problem["href"][0:8] == "https://"
 
+
 def test_get_this_weeks_step_assignment():
     """
     Test modulo arithmetic logic for determining the current STEP assignment from the current date

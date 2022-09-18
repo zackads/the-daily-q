@@ -1,8 +1,10 @@
+"""Functions for sending STEP Support Programme assignments"""
 from datetime import datetime
 from typing import Tuple
 
 
 def get_this_weeks_assignment(today: datetime.date) -> str:
+    """Work out the current assignment from today's date"""
     start = datetime(2022, 9, 12)
     current_assignment_index = (today - start).days // 7
 
@@ -55,17 +57,19 @@ def get_this_weeks_assignment(today: datetime.date) -> str:
         "https://maths.org/step/step-3-mechanics",
         "https://maths.org/step/step-3-statistics",
         "https://maths.org/step/step-3-vectors",
-        "https://maths.org/step/various-mixed-step-3-pure-questions"
+        "https://maths.org/step/various-mixed-step-3-pure-questions",
     ]
 
     return assignments[current_assignment_index]
 
 
 def email_body(assignment_url: str) -> Tuple[str, str]:
+    """Build an HTML and plaintext-formatted email body"""
     return body_html(assignment_url), body_plaintext(assignment_url)
 
 
 def body_html(assignment_url: str) -> str:
+    """Build an HTML-formatted email body"""
     return f"""<html>
 <head></head>
 <body>
@@ -76,4 +80,5 @@ def body_html(assignment_url: str) -> str:
 
 
 def body_plaintext(assignment_url: str) -> str:
+    """Build a plaintext-formatted email body"""
     return "Weekly STEP Assignment" f"{assignment_url}"

@@ -11,6 +11,7 @@ class ALevelQuestion(TypedDict):
     URLs linking to a single A-level question and its worked solution with examiner feedback.
     Links go to images hosted in S3.
     """
+
     questionUrl: str
     solutionUrl: str
 
@@ -19,12 +20,16 @@ def get_questions(s3_bucket) -> list[ALevelQuestion]:
     """
     List all URLs to A-level questions and their solutions
     """
-    s3_url = f'https://{s3_bucket.name}.s3.eu-west-2.amazonaws.com/'
+    s3_url = f"https://{s3_bucket.name}.s3.eu-west-2.amazonaws.com/"
 
-    questions = [s3_url + q.key for q in s3_bucket.objects.filter(Prefix="a_level/questions")]
-    solutions = [s3_url + s.key for s in s3_bucket.objects.filter(Prefix="a_level/solutions")]
+    questions = [
+        s3_url + q.key for q in s3_bucket.objects.filter(Prefix="a_level/questions")
+    ]
+    solutions = [
+        s3_url + s.key for s in s3_bucket.objects.filter(Prefix="a_level/solutions")
+    ]
 
-    return [{'questionUrl': q, 'solutionUrl': s} for q, s in zip(questions, solutions)]
+    return [{"questionUrl": q, "solutionUrl": s} for q, s in zip(questions, solutions)]
 
 
 def get_random_question(s3_bucket) -> ALevelQuestion:

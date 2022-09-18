@@ -2,8 +2,9 @@
 Email maths problems etc. periodically
 """
 
-from datetime import datetime
 import os
+from datetime import datetime
+
 import boto3
 from botocore.exceptions import ClientError
 from chalice import Chalice, Cron
@@ -25,24 +26,32 @@ RECIPIENT = email_address
 @app.schedule(Cron(0, 7, "*", "*", "?", "*"))  # Daily at 7am UTC
 def send_a_level_questions(event):
     """Daily questions"""
-    send_email("The Daily Q", *a_level.email_body(a_level.get_random_question(s3_bucket)))
+    send_email(
+        "The Daily Q", *a_level.email_body(a_level.get_random_question(s3_bucket))
+    )
     send_email("NRICH Short", *nrich.email_body(nrich.get_random_short_problem()))
 
 
 @app.schedule(Cron(0, 7, "?", "*", "MON", "*"))  # Every Monday at 7am UTC
 def send_step_assignment(event):
     """Email an assignment from the STEP Support Programme"""
-    send_email("Weekly STEP "
-               "Assignment", *step.email_body(step.get_this_weeks_assignment(datetime.today())))
+    send_email(
+        "Weekly STEP Assignment",
+        *step.email_body(step.get_this_weeks_assignment(datetime.today()))
+    )
 
 
 @app.route("/test", methods=["GET"])
 def send_test_email():
     """For testing"""
-    send_email("Test A-level Q", *a_level.email_body(a_level.get_random_question(s3_bucket)))
+    send_email(
+        "Test A-level Q", *a_level.email_body(a_level.get_random_question(s3_bucket))
+    )
     send_email("Test NRICH Short", *nrich.email_body(nrich.get_random_short_problem()))
-    send_email("Test Weekly STEP "
-               "Assignment", *step.email_body(step.get_this_weeks_assignment(datetime.today())))
+    send_email(
+        "Test Weekly STEP Assignment",
+        *step.email_body(step.get_this_weeks_assignment(datetime.today()))
+    )
 
 
 def send_email(subject: str, body_html: str, body_plaintext: str) -> None:
@@ -53,17 +62,16 @@ def send_email(subject: str, body_html: str, body_plaintext: str) -> None:
             Message={
                 "Body": {
                     "Html": {"Charset": "UTF-8", "Data": body_html},
-                    "Text": {
-                        "Charset": "UTF-8",
-                        "Data": body_plaintext,
-                    },
+                    "Text": {"Charset": "UTF-8", "Data": body_plaintext, },
                 },
                 "Subject": {"Charset": "UTF-8", "Data": subject},
             },
             Source=SENDER,
         )
     except ClientError as error:
-        app.log.error("Sending email failed with error message %s",
-                      error.response["Error"]["Message"])
+        app.log.error(
+            "Sending email failed with error message %s",
+            error.response["Error"]["Message"],
+        )
     else:
         app.log.info("Email sent with MessageId %s", response["MessageId"])
