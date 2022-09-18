@@ -4,8 +4,8 @@ from datetime import datetime
 
 import pytest
 
-from runtime.chalicelib.nrich import get_random_short_problem
-from runtime.chalicelib.step import get_this_weeks_assignment
+from chalicelib.nrich import get_random_short_problem
+from chalicelib.step import get_this_weeks_assignment
 
 
 def test_number_solutions_matches_number_questions():
