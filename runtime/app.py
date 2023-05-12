@@ -3,7 +3,7 @@ Email maths problems etc. periodically
 """
 
 import os
-from datetime import datetime
+from datetime import datetime, date
 
 import boto3
 from botocore.exceptions import ClientError
@@ -31,6 +31,26 @@ def send_a_level_questions(event):
     )
     send_email("NRICH Short", *nrich.email_body(nrich.get_random_short_problem()))
 
+def days_until(future_date: datetime): 
+    today = datetime.today()
+    diff = future_date - today
+    return diff.days + 1
+
+def send_countdown(event):
+    """Countdown to exams"""
+    exam_dates = [
+            { "name": "Further Core Pure 1", "date": datetime(2023, 5, 25)},
+            { "name": "Further Core Pure 2", "date": datetime(2023, 6, 5)},
+            { "name": "Maths Pure 1", "date": datetime(2023, 6, 6)},
+            { "name": "Maths Pure 2", "date": datetime(2023, 6, 13)},
+            { "name": "Maths Statistics & Mechanics", "date": datetime(2023, 6, 20)},
+            { "name": "Further Decision 1", "date": datetime(2023, 6, 23)},
+            { "name": "Further Decision 2", "date": datetime(2023, 6, 26)},
+        ]
+
+    message_body = "\n".join([f'{exam["name"]}: {days_until(exam["date"])} days until {exam["date"].strftime("%d %B")}' for exam in exam_dates])
+
+    send_email("Daily exam countdown", message_body)
 
 @app.schedule(Cron(0, 7, "?", "*", "MON", "*"))  # Every Monday at 7am UTC
 def send_step_assignment(event):
