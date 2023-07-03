@@ -34,12 +34,24 @@ def get_questions(s3_bucket) -> list[ALevelQuestion]:
 
 def get_random_question(s3_bucket) -> ALevelQuestion:
     """
-    Select a question from the question bank.
+    Select a random question from the question bank using a uniform distribution
 
     Return a tuple of the question URL and the solution URL
     """
     questions = get_questions(s3_bucket)
     i = random.randrange(0, len(questions))
+
+    return questions[i]
+
+
+def get_random_recent_question(s3_bucket) -> ALevelQuestion:
+    """
+    Select a random question from the question bank using a triangular distribution.
+
+    Return a tuple of the question URL and the solution URL
+    """
+    questions = get_questions(s3_bucket)
+    i = random.triangular(0, len(questions), len(questions))
 
     return questions[i]
 

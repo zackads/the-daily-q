@@ -27,7 +27,8 @@ RECIPIENT = email_address
 def send_a_level_questions(event):
     """Daily questions"""
     send_email(
-        "The Daily Q", *a_level.email_body(a_level.get_random_question(s3_bucket))
+        "The Daily Q",
+        *a_level.email_body(a_level.get_random_recent_question(s3_bucket))
     )
     send_email("NRICH Short", *nrich.email_body(nrich.get_random_short_problem()))
 
@@ -62,7 +63,10 @@ def send_email(subject: str, body_html: str, body_plaintext: str) -> None:
             Message={
                 "Body": {
                     "Html": {"Charset": "UTF-8", "Data": body_html},
-                    "Text": {"Charset": "UTF-8", "Data": body_plaintext, },
+                    "Text": {
+                        "Charset": "UTF-8",
+                        "Data": body_plaintext,
+                    },
                 },
                 "Subject": {"Charset": "UTF-8", "Data": subject},
             },
