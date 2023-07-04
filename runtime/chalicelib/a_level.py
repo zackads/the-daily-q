@@ -3,6 +3,7 @@ Get links to A-level Mathematics questions and prepare them for emailing
 """
 
 import random
+import math
 from typing import Tuple, TypedDict
 
 
@@ -51,7 +52,7 @@ def get_random_recent_question(s3_bucket) -> ALevelQuestion:
     Return a tuple of the question URL and the solution URL
     """
     questions = get_questions(s3_bucket)
-    i = random.triangular(0, len(questions), len(questions))
+    i = math.ceil(random.triangular(0, len(questions), len(questions)))
 
     return questions[i]
 
