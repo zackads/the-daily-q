@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Daily Q</title>
 <style>
-  body {
+ body {
     font-family: Arial, sans-serif;
     text-align: center;
     background-color: #f0f0f0;
@@ -47,15 +47,19 @@
   .button:hover {
     background-color: #0056b3;
   }
-</style>
+  </style>
 </head>
 <body>
 <div class="container">
   <h1>The Daily Q</h1>
   <p class="subtitle">A maths question a day keeps management consultancy away.</p>
-  <img id="questionImage" src="" alt="Question Image">
+  <a href="#" target="_blank" id="questionLink">
+    <img id="questionImage" src="" alt="Question Image">
+  </a>
   <button id="markSchemeButton" class="button" onclick="toggleMarkScheme()">Show Mark Scheme</button>
-  <img id="markSchemeImage" src="" alt="Mark Scheme" style="display: none;">
+  <a href="#" target="_blank" id="markSchemeLink">
+    <img id="markSchemeImage" src="" alt="Mark Scheme" style="display: none;">
+  </a>
   <button id="nextQuestionButton" class="button" onclick="loadNextQuestion()">Hit me with another</button>
 </div>
 <script>
@@ -64,10 +68,10 @@
     var markSchemeButton = document.getElementById("markSchemeButton");
     if (markSchemeImage.style.display === "none") {
       markSchemeImage.style.display = "block";
-      markSchemeButton.innerHTML = "Hide Mark Scheme";
+      markSchemeButton.innerHTML = "Hide mark scheme";
     } else {
       markSchemeImage.style.display = "none";
-      markSchemeButton.innerHTML = "Show Mark Scheme";
+      markSchemeButton.innerHTML = "Show mark scheme";
     }
   }
 
@@ -76,24 +80,54 @@
   }
 
   function loadNextQuestion() {
-    var questionImage = document.getElementById("questionImage");
-    var markSchemeImage = document.getElementById("markSchemeImage");
+    var questionLink = document.getElementById("questionLink");
+    var markSchemeLink = document.getElementById("markSchemeLink");
     var questionNumber = getRandomQuestionNumber();
     var questionImagePath = `questions/q${questionNumber}.png`;
     var markSchemeImagePath = `solutions/s${questionNumber}.png`;
 
-    questionImage.src = questionImagePath;
-    markSchemeImage.src = markSchemeImagePath;
+    // Set the question number as a URL parameter
+    window.history.replaceState({}, '', `?question=${questionNumber}`);
+
+    questionLink.href = questionImagePath;
+    markSchemeLink.href = markSchemeImagePath;
+    document.getElementById("questionImage").src = questionImagePath;
+    document.getElementById("markSchemeImage").src = markSchemeImagePath;
     
     // Reset mark scheme
     var markSchemeButton = document.getElementById("markSchemeButton");
+    var markSchemeImage = document.getElementById("markSchemeImage");
     markSchemeImage.style.display = "none";
     markSchemeButton.innerHTML = "Show Mark Scheme";
   }
 
-  // Load a random question on page load
+  // Load a random question or retrieve from URL parameter on page load
   window.addEventListener('load', function () {
-    loadNextQuestion();
+    var queryString = window.location.search;
+    var urlParams = new URLSearchParams(queryString);
+    var questionNumberParam = urlParams.get('question');
+
+    if (questionNumberParam !== null) {
+      // Use the provided question number from the URL parameter
+      var questionLink = document.getElementById("questionLink");
+      var markSchemeLink = document.getElementById("markSchemeLink");
+      var questionImagePath = `questions/q${questionNumberParam}.png`;
+      var markSchemeImagePath = `solutions/s${questionNumberParam}.png`;
+
+      questionLink.href = questionImagePath;
+      markSchemeLink.href = markSchemeImagePath;
+      document.getElementById("questionImage").src = questionImagePath;
+      document.getElementById("markSchemeImage").src = markSchemeImagePath;
+      
+      // Reset mark scheme
+      var markSchemeButton = document.getElementById("markSchemeButton");
+      var markSchemeImage = document.getElementById("markSchemeImage");
+      markSchemeImage.style.display = "none";
+      markSchemeButton.innerHTML = "Show Mark Scheme";
+    } else {
+      // Load a random question if no parameter is provided
+      loadNextQuestion();
+    }
   });
 </script>
 </body>
