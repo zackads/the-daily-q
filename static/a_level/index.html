@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Daily Q</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+  }
+  .container {
+    max-width: 600px;
+    padding: 20px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  h1 {
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+  p.subtitle {
+    font-size: 16px;
+    margin-bottom: 20px;
+    color: #555;
+  }
+  img {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 20px;
+  }
+  .button {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 14px;
+    border: none;
+    background-color: #007bff;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  .button:hover {
+    background-color: #0056b3;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>The Daily Q</h1>
+  <p class="subtitle">A maths question a day keeps management consultancy away.</p>
+  <img id="questionImage" src="" alt="Question Image">
+  <button id="markSchemeButton" class="button" onclick="toggleMarkScheme()">Show Mark Scheme</button>
+  <img id="markSchemeImage" src="" alt="Mark Scheme" style="display: none;">
+  <button id="nextQuestionButton" class="button" onclick="loadNextQuestion()">Hit me with another</button>
+</div>
+<script>
+  function toggleMarkScheme() {
+    var markSchemeImage = document.getElementById("markSchemeImage");
+    var markSchemeButton = document.getElementById("markSchemeButton");
+    if (markSchemeImage.style.display === "none") {
+      markSchemeImage.style.display = "block";
+      markSchemeButton.innerHTML = "Hide Mark Scheme";
+    } else {
+      markSchemeImage.style.display = "none";
+      markSchemeButton.innerHTML = "Show Mark Scheme";
+    }
+  }
+
+  function getRandomQuestionNumber() {
+    return Math.floor(Math.random() * 1300) + 1;
+  }
+
+  function loadNextQuestion() {
+    var questionImage = document.getElementById("questionImage");
+    var markSchemeImage = document.getElementById("markSchemeImage");
+    var questionNumber = getRandomQuestionNumber();
+    var questionImagePath = `questions/q${questionNumber}.png`;
+    var markSchemeImagePath = `solutions/s${questionNumber}.png`;
+
+    questionImage.src = questionImagePath;
+    markSchemeImage.src = markSchemeImagePath;
+    
+    // Reset mark scheme
+    var markSchemeButton = document.getElementById("markSchemeButton");
+    markSchemeImage.style.display = "none";
+    markSchemeButton.innerHTML = "Show Mark Scheme";
+  }
+
+  // Load a random question on page load
+  window.addEventListener('load', function () {
+    loadNextQuestion();
+  });
+</script>
+</body>
+</html>
