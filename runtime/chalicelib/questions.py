@@ -1,5 +1,5 @@
 """
-Get links to A-level Mathematics questions and prepare them for emailing
+Get links to mathematics questions and prepare them for emailing
 """
 
 import random
@@ -7,9 +7,9 @@ import math
 from typing import Tuple, TypedDict
 
 
-class ALevelQuestion(TypedDict):
+class Question(TypedDict):
     """
-    URLs linking to a single A-level question and its worked solution with examiner feedback.
+    URLs linking to a single question and its worked solution with examiner feedback.
     Links go to images hosted in S3.
     """
 
@@ -17,35 +17,35 @@ class ALevelQuestion(TypedDict):
     solutionUrl: str
 
 
-def get_questions(s3_bucket) -> list[ALevelQuestion]:
+def get_questions(s3_bucket, directory_name) -> list[Question]:
     """
-    List all URLs to A-level questions and their solutions
+    List all URLs to questions and their solutions
     """
     s3_url = f"https://{s3_bucket.name}.s3.eu-west-2.amazonaws.com/"
 
     questions = [
-        s3_url + q.key for q in s3_bucket.objects.filter(Prefix="a_level/questions")
+        s3_url + q.key for q in s3_bucket.objects.filter(Prefix=f'{directory_name}/questions')
     ]
     solutions = [
-        s3_url + s.key for s in s3_bucket.objects.filter(Prefix="a_level/solutions")
+        s3_url + s.key for s in s3_bucket.objects.filter(Prefix=f'{directory_name}/solutions')
     ]
 
     return [{"questionUrl": q, "solutionUrl": s} for q, s in zip(questions, solutions)]
 
 
-def get_random_question(s3_bucket) -> ALevelQuestion:
+def get_random_question(s3_bucket, directory_name) -> Question:
     """
     Select a random question from the question bank using a uniform distribution
 
     Return a tuple of the question URL and the solution URL
     """
-    questions = get_questions(s3_bucket)
+    questions = get_questions(s3_bucket, directory_name)
     i = random.randrange(0, len(questions))
 
     return questions[i]
 
 
-def get_random_recent_question(s3_bucket) -> ALevelQuestion:
+def get_random_recent_question(s3_bucket) -> Question:
     """
     Select a random question from the question bank using a triangular distribution.
 
@@ -57,16 +57,16 @@ def get_random_recent_question(s3_bucket) -> ALevelQuestion:
     return questions[i]
 
 
-def email_body(question: ALevelQuestion) -> Tuple[str, str]:
+def email_body(question: Question) -> Tuple[str, str]:
     """
-    Return the body HTML and plaintext for an A-level question email
+    Return the body HTML and plaintext for a question email
     """
     return body_html(question), body_plaintext(question)
 
 
-def body_html(question: ALevelQuestion) -> str:
+def body_html(question: Question) -> str:
     """
-    Format an A-level question email
+    Format a question email
     """
     return f"""<html>
 <head></head>
@@ -79,9 +79,9 @@ def body_html(question: ALevelQuestion) -> str:
 """
 
 
-def body_plaintext(question: ALevelQuestion) -> str:
+def body_plaintext(question: Question) -> str:
     """
-    Plaintext A-level question email
+    Plaintext question email
     """
     return f"""
 The Daily Q

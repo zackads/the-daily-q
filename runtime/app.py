@@ -9,7 +9,7 @@ import boto3
 from botocore.exceptions import ClientError
 from chalice import Chalice, Cron
 
-from chalicelib import a_level, nrich, step
+from chalicelib import questions
 
 s3 = boto3.resource("s3")
 s3_bucket = s3.Bucket(os.environ.get("S3_BUCKET_NAME", "the-daily-q"))
@@ -23,22 +23,12 @@ SENDER = "The Daily Q <" + email_address + ">"
 RECIPIENT = email_address
 
 
-# @app.schedule(Cron(0, 7, "*", "*", "?", "*"))  # Daily at 7am UTC
-# def send_a_level_questions(event):
-#     """Daily questions"""
-#     send_email(
-#         "The Daily Q", *a_level.email_body(a_level.get_random_question(s3_bucket))
-#     )
-#     send_email("NRICH Short", *nrich.email_body(nrich.get_random_short_problem()))
-
-
-# @app.schedule(Cron(0, 7, "?", "*", "MON", "*"))  # Every Monday at 7am UTC
-# def send_step_assignment(event):
-#     """Email an assignment from the STEP Support Programme"""
-#     send_email(
-#         "Weekly STEP Assignment",
-#         *step.email_body(step.get_this_weeks_assignment(datetime.today()))
-#     )
+@app.schedule(Cron(0, 7, "*", "*", "?", "*"))  # daily at 7am utc
+def send_a_level_questions(event):
+    """Daily question"""
+    send_email(
+        "The Daily Q", *questions.email_body(questions.get_random_question(s3_bucket, "degree"))
+    )
 
 
 @app.route("/test", methods=["GET"])
