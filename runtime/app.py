@@ -23,7 +23,7 @@ SENDER = "The Daily Q <" + email_address + ">"
 RECIPIENT = email_address
 
 
-@app.schedule(Cron(0, 7, "*", "*", "?", "*"))  # daily at 7am utc
+@app.schedule(Cron(0, 6, "*", "*", "?", "*"))  # daily at 6am utc
 def send_a_level_questions(event):
     """Daily question"""
     send_email(
