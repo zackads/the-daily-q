@@ -23,12 +23,12 @@ SENDER = "The Daily Q <" + email_address + ">"
 RECIPIENT = email_address
 
 
-@app.schedule(Cron(0, 6, "*", "*", "?", "*"))  # daily at 6am utc
-def send_a_level_questions(event):
-    """Daily question"""
-    send_email(
-        "The Daily Q", *questions.email_body(questions.get_random_question(s3_bucket, "degree"))
-    )
+# @app.schedule(Cron(0, 6, "*", "*", "?", "*"))  # daily at 6am utc
+# def send_a_level_questions(event):
+#     """Daily question"""
+#     send_email(
+#         "The Daily Q", *questions.email_body(questions.get_random_question(s3_bucket, "degree"))
+#     )
 
 
 @app.route("/test", methods=["GET"])
