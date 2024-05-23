@@ -4,7 +4,7 @@ Email maths problems etc. periodically
 
 import os
 from datetime import datetime
-
+import random
 import boto3
 from botocore.exceptions import ClientError
 from chalice import Chalice, Cron
@@ -29,6 +29,28 @@ RECIPIENT = email_address
 #     send_email(
 #         "The Daily Q", *questions.email_body(questions.get_random_question(s3_bucket, "degree"))
 #     )
+
+
+@app.schedule(Cron(0, 6, "*", "*", "?", "*"))  # daily at 6am utc
+def send_leetcode_problem(event):
+    """Daily Leetcode problem"""
+    i = random.randint(1, 150)
+    with open("static/leetcode.txt", "r") as leetcode_file:
+        with open("static/neetcode.txt", "r") as solutions_file:
+            problem_links = [l.strip() for l in leetcode_file.readlines()]
+            solution_links = [l.strip() for l in solutions_file.readlines()]
+
+    body = f"""<html>
+<head></head>
+<body>
+    <h1>The Leetcode 150</h1>
+    <a href="{problem_links[i]}">Today's problem</a>
+    <a href="{solution_links[i]}">Solution on Neetcode</a>
+</body>
+</html>
+"""
+
+    send_email("Leetcode 150", body, body)
 
 
 @app.route("/test", methods=["GET"])
