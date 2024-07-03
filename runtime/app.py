@@ -3,12 +3,12 @@ Email maths problems etc. periodically
 """
 
 import os
-from datetime import datetime
 import boto3
 from botocore.exceptions import ClientError
 from chalice import Chalice, Cron
 
 from chalicelib import problems
+from chalicelib import algorithms
 
 s3 = boto3.resource("s3")
 s3_bucket = s3.Bucket(os.environ.get("S3_BUCKET_NAME", "the-daily-q"))
@@ -32,6 +32,10 @@ def send_emails(event):
         "The Daily Q - Statistics",
         *problems.email_body(problems.get_random_problem(s3_bucket, "problems/statistics"))
     )
+    send_email(
+        "The Daily Q - Algorithms",
+        *algorithms.email_body(algorithms.get_random_problem())
+    )
 
 
 @app.route("/test", methods=["GET"])
@@ -44,6 +48,10 @@ def send_test_email():
     send_email(
         "The Daily Q - Statistics",
         *problems.email_body(problems.get_random_problem(s3_bucket, "problems/statistics"))
+    )
+    send_email(
+        "The Daily Q - Algorithms",
+        *algorithms.email_body(algorithms.get_random_problem())
     )
 
 
