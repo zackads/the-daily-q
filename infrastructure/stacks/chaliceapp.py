@@ -11,7 +11,6 @@ except ImportError:
 
 from chalice.cdk import Chalice
 
-
 RUNTIME_SOURCE_DIR = os.path.join(
     os.path.dirname(os.path.dirname(__file__)), os.pardir, "runtime"
 )
@@ -48,7 +47,12 @@ class ChaliceApp(cdk.Stack):
             bucket_name="the-daily-q",
             website_redirect=s3.RedirectTarget(host_name="aws.amazon.com"),
             public_read_access=True,
-            block_public_access=None
+            block_public_access=s3.BlockPublicAccess(
+                block_public_policy=False,
+                restrict_public_buckets=False,
+                block_public_acls=False,
+                ignore_public_acls=False
+            )
         )
         cdk.CfnOutput(self, "S3BucketName", value=bucket.bucket_name)
         cdk.CfnOutput(self, "BucketDomain", value=bucket.bucket_website_domain_name)
