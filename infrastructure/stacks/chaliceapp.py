@@ -48,6 +48,7 @@ class ChaliceApp(cdk.Stack):
             bucket_name="the-daily-q",
             website_redirect=s3.RedirectTarget(host_name="aws.amazon.com"),
             public_read_access=True,
+            block_public_access=None
         )
         cdk.CfnOutput(self, "S3BucketName", value=bucket.bucket_name)
         cdk.CfnOutput(self, "BucketDomain", value=bucket.bucket_website_domain_name)
