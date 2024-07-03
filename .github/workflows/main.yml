@@ -24,4 +24,4 @@ jobs:
         working-directory: ./infrastructure
         run: cdk deploy -f --require-approval "never"
       - name: Sync questions
-        run: aws s3 sync ./static s3://the-daily-q
+        run: aws s3 sync ./static s3://the-daily-q --delete

@@ -7,7 +7,7 @@ import math
 from typing import Tuple, TypedDict
 
 
-class Question(TypedDict):
+class Problem(TypedDict):
     """
     URLs linking to a single question and its worked solution with examiner feedback.
     Links go to images hosted in S3.
@@ -17,7 +17,7 @@ class Question(TypedDict):
     solutionUrl: str
 
 
-def get_questions(s3_bucket, directory_name) -> list[Question]:
+def get_problems(s3_bucket, directory_name) -> list[Problem]:
     """
     List all URLs to questions and their solutions
     """
@@ -33,38 +33,38 @@ def get_questions(s3_bucket, directory_name) -> list[Question]:
     return [{"questionUrl": q, "solutionUrl": s} for q, s in zip(questions, solutions)]
 
 
-def get_random_question(s3_bucket, directory_name) -> Question:
+def get_random_problem(s3_bucket, directory_name) -> Problem:
     """
     Select a random question from the question bank using a uniform distribution
 
     Return a tuple of the question URL and the solution URL
     """
-    questions = get_questions(s3_bucket, directory_name)
+    questions = get_problems(s3_bucket, directory_name)
     i = random.randrange(0, len(questions))
 
     return questions[i]
 
 
-def get_random_recent_question(s3_bucket) -> Question:
+def get_random_recent_question(s3_bucket) -> Problem:
     """
     Select a random question from the question bank using a triangular distribution.
 
     Return a tuple of the question URL and the solution URL
     """
-    questions = get_questions(s3_bucket)
+    questions = get_problems(s3_bucket)
     i = math.ceil(random.triangular(0, len(questions), len(questions)))
 
     return questions[i]
 
 
-def email_body(question: Question) -> Tuple[str, str]:
+def email_body(question: Problem) -> Tuple[str, str]:
     """
     Return the body HTML and plaintext for a question email
     """
     return body_html(question), body_plaintext(question)
 
 
-def body_html(question: Question) -> str:
+def body_html(question: Problem) -> str:
     """
     Format a question email
     """
@@ -79,7 +79,7 @@ def body_html(question: Question) -> str:
 """
 
 
-def body_plaintext(question: Question) -> str:
+def body_plaintext(question: Problem) -> str:
     """
     Plaintext question email
     """

@@ -4,12 +4,11 @@ Email maths problems etc. periodically
 
 import os
 from datetime import datetime
-import random
 import boto3
 from botocore.exceptions import ClientError
 from chalice import Chalice, Cron
 
-from chalicelib import questions
+from chalicelib import problems
 
 s3 = boto3.resource("s3")
 s3_bucket = s3.Bucket(os.environ.get("S3_BUCKET_NAME", "the-daily-q"))
@@ -23,46 +22,28 @@ SENDER = "The Daily Q <" + email_address + ">"
 RECIPIENT = email_address
 
 
-# @app.schedule(Cron(0, 6, "*", "*", "?", "*"))  # daily at 6am utc
-# def send_a_level_questions(event):
-#     """Daily question"""
-#     send_email(
-#         "The Daily Q", *questions.email_body(questions.get_random_question(s3_bucket, "degree"))
-#     )
-
-
 @app.schedule(Cron(0, 6, "*", "*", "?", "*"))  # daily at 6am utc
-def send_leetcode_problem(event):
-    """Daily Leetcode problem"""
-    i = random.randint(1, 150)
-    with open("static/leetcode.txt", "r") as leetcode_file:
-        with open("static/neetcode.txt", "r") as solutions_file:
-            problem_links = [l.strip() for l in leetcode_file.readlines()]
-            solution_links = [l.strip() for l in solutions_file.readlines()]
-
-    body = f"""<html>
-<head></head>
-<body>
-    <h1>The Leetcode 150</h1>
-    <a href="{problem_links[i]}">Today's problem</a>
-    <a href="{solution_links[i]}">Solution on Neetcode</a>
-</body>
-</html>
-"""
-
-    send_email("Leetcode 150", body, body)
+def send_emails(event):
+    send_email(
+        "The Daily Q - Probability",
+        *problems.email_body(problems.get_random_problem(s3_bucket, "problems/probability"))
+    )
+    send_email(
+        "The Daily Q - Statistics",
+        *problems.email_body(problems.get_random_problem(s3_bucket, "problems/statistics"))
+    )
 
 
 @app.route("/test", methods=["GET"])
 def send_test_email():
     """For testing"""
     send_email(
-        "Test A-level Q", *a_level.email_body(a_level.get_random_question(s3_bucket))
+        "The Daily Q - Probability",
+        *problems.email_body(problems.get_random_problem(s3_bucket, "problems/probability"))
     )
-    send_email("Test NRICH Short", *nrich.email_body(nrich.get_random_short_problem()))
     send_email(
-        "Test Weekly STEP Assignment",
-        *step.email_body(step.get_this_weeks_assignment(datetime.today()))
+        "The Daily Q - Statistics",
+        *problems.email_body(problems.get_random_problem(s3_bucket, "problems/statistics"))
     )
 
 

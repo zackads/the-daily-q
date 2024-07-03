@@ -17,6 +17,7 @@ $ pip install -r requirements.txt
 ## Deploy
 
 ```bash
+$ aws s3 sync ./static s3://the-daily-q --delete
 $ cd infrastructure
 $ cdk bootstrap && cdk deploy
 ```
