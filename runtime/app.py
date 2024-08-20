@@ -4,6 +4,7 @@ Email maths problems etc. periodically
 
 import os
 import boto3
+import random
 from botocore.exceptions import ClientError
 from chalice import Chalice, Cron
 
@@ -24,18 +25,18 @@ RECIPIENT = email_address
 
 @app.schedule(Cron(0, 6, "*", "*", "?", "*"))  # daily at 6am utc
 def send_emails(event):
-    send_email(
-        "The Daily Q - Probability",
-        *problems.email_body(problems.get_random_problem(s3_bucket, "problems/probability"))
-    )
-    send_email(
-        "The Daily Q - Statistics",
-        *problems.email_body(problems.get_random_problem(s3_bucket, "problems/statistics"))
-    )
-    send_email(
-        "The Daily Q - Algorithms",
-        *algorithms.email_body(algorithms.get_random_problem())
-    )
+    n = random.choice([1, 2])
+
+    if (n == 1):
+        send_email(
+            "The Daily Q - Probability",
+            *problems.email_body(problems.get_random_problem(s3_bucket, "problems/probability"))
+        )
+    else:
+        send_email(
+            "The Daily Q - Statistics",
+            *problems.email_body(problems.get_random_problem(s3_bucket, "problems/statistics"))
+        )
 
 
 @app.route("/test", methods=["GET"])
