@@ -25,7 +25,7 @@ RECIPIENT = email_address
 
 @app.schedule(Cron(0, 6, "*", "*", "?", "*"))  # daily at 6am utc
 @app.route("/send", methods=["GET"])
-def send_emails(event):
+def send_emails(event=None):
     subject = "The Daily Q"
 
     f = random.choice([
