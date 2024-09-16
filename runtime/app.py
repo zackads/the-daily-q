@@ -24,19 +24,48 @@ RECIPIENT = email_address
 
 
 @app.schedule(Cron(0, 6, "*", "*", "?", "*"))  # daily at 6am utc
+@app.route("/send", methods=["GET"])
 def send_emails(event):
-    n = random.choice([1, 2])
+    subject = "The Daily Q"
 
-    if (n == 1):
-        send_email(
-            "The Daily Q - Probability",
-            *problems.email_body(problems.get_random_problem(s3_bucket, "problems/probability"))
-        )
-    else:
-        send_email(
-            "The Daily Q - Statistics",
-            *problems.email_body(problems.get_random_problem(s3_bucket, "problems/statistics"))
-        )
+    f = random.choice([
+        lambda: send_email(
+            subject,
+            *problems.email_body(problems.get_random_problem(s3_bucket, "problems/algorithms_ii"))
+        ),
+        lambda: send_email(
+            subject,
+            *problems.email_body(problems.get_random_problem(s3_bucket, "problems/statistics_ii"))
+        ),
+        lambda: send_email(
+            subject,
+            *problems.email_body(problems.get_random_problem(s3_bucket, "problems/comp_arch"))
+        ),
+        lambda: send_email(
+            subject,
+            *problems.email_body(problems.get_random_problem(s3_bucket, "problems/prog_lang_and_comp"))
+        ),
+        lambda: send_email(
+            subject,
+            *get_random_leetcode_email_body()
+        )])
+
+    f()
+
+
+def get_random_leetcode_email_body():
+    with open("static/leetcode.txt", "r") as f:
+        problem_links = [l.strip() for l in f.readlines()]
+
+    i = random.randint(1, len(problem_links))
+
+    return (f"""<html>
+<head></head>
+<body>
+    <a href="{problem_links[i]}">Today's Leetcode problem</a>
+</body>
+</html>
+""", problem_links[i])
 
 
 @app.route("/test", methods=["GET"])
