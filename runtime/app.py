@@ -23,7 +23,7 @@ SENDER = "The Daily Q <" + email_address + ">"
 RECIPIENT = email_address
 
 
-@app.schedule(Cron(0, 6, "*", "*", "?", "*"))  # daily at 6am utc
+# @app.schedule(Cron(0, 6, "*", "*", "?", "*"))  # daily at 6am utc
 @app.route("/send", methods=["GET"])
 def send_emails(event=None):
     subject = "The Daily Q"
